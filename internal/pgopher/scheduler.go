@@ -15,13 +15,14 @@ func (s *Server) startScheduler(ctx context.Context, wg *sync.WaitGroup) {
 
 	scheduler := cron.New()
 
-	for name, target := range s.cfg.ProfilingTargets {
-		logger := slog.With(slog.String("target", name))
+	for _, target := range s.cfg.ProfilingTargets {
+		logger := slog.With(slog.String("target", target.Name))
 
 		_, err := scheduler.AddJob(target.Schedule, profileCollector{
 			ctx:    ctx,
 			logger: *logger,
 			target: target,
+			sink:   s.cfg.Sink,
 		})
 		if err != nil {
 			logger.Error("failed to create collector for profiling target", slog.String("err", err.Error()))

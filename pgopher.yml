@@ -1,7 +1,10 @@
 listenAddress: ":8000"
-sink: file
 profilingTargets:
-  test:
-    url: http://localhost:6060/debug/pprof/profile
-    duration: 30s
+  - name: test
+    url: http://localhost:8010/debug/pprof/profile
+    duration: 5s
     schedule: "* * * * *"
+sink:
+  type: file
+  fileSinkOptions:
+    folder: profiles
