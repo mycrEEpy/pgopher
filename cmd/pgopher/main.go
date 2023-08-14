@@ -12,7 +12,6 @@ import (
 	"syscall"
 
 	"github.com/mycreepy/pgopher/internal/pgopher"
-	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -49,43 +48,35 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 	defer cancel()
 
-	file, err := os.Open(*cfgFile)
+	cfg, err := pgopher.LoadConfig(*cfgFile)
 	if err != nil {
-		slog.Error("failed to open config file", slog.String("err", err.Error()))
-		os.Exit(1)
-	}
-
-	decoder := yaml.NewDecoder(file)
-	decoder.KnownFields(true)
-
-	cfg := pgopher.DefaultConfig()
-
-	err = decoder.Decode(&cfg)
-	if err != nil {
-		slog.Error("failed to decode config", slog.String("err", err.Error()))
+		slog.Error("failed to load config", slog.String("err", err.Error()))
 		os.Exit(1)
 	}
 
 	slog.Debug("loaded configuration", slog.String("file", *cfgFile), slog.Any("config", cfg))
 
 	if *pprofEnabled {
-		go func() {
-			pprofMux := http.NewServeMux()
-			pprofMux.HandleFunc("/debug/pprof/profile", pprof.Profile)
-			pprofServer := &http.Server{Addr: cfg.PprofListenAddress, Handler: pprofMux}
-
-			slog.Info("starting pprof server", slog.String("listenAddr", cfg.PprofListenAddress))
-
-			pprofErr := pprofServer.ListenAndServe()
-			if pprofErr != nil && !errors.Is(err, http.ErrServerClosed) {
-				slog.Error("pprof server failed", slog.String("err", pprofErr.Error()))
-			}
-		}()
+		go pprofServer(cfg.PprofListenAddress)
 	}
 
 	err = pgopher.NewServer(cfg).Run(ctx)
 	if err != nil {
 		slog.Error("failed to run server", slog.String("err", err.Error()))
 		os.Exit(1)
+	}
+}
+
+func pprofServer(listenAddr string) {
+	pprofMux := http.NewServeMux()
+	pprofMux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+
+	server := &http.Server{Addr: listenAddr, Handler: pprofMux}
+
+	slog.Info("starting pprof server", slog.String("listenAddr", listenAddr))
+
+	err := server.ListenAndServe()
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		slog.Error("pprof server failed", slog.String("err", err.Error()))
 	}
 }

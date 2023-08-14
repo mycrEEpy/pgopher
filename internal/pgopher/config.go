@@ -1,6 +1,12 @@
 package pgopher
 
-import "time"
+import (
+	"fmt"
+	"os"
+	"time"
+
+	"gopkg.in/yaml.v3"
+)
 
 type Config struct {
 	ListenAddress      string            `yaml:"listenAddress"`
@@ -37,4 +43,23 @@ func DefaultConfig() Config {
 			},
 		},
 	}
+}
+
+func LoadConfig(path string) (Config, error) {
+	cfg := DefaultConfig()
+
+	file, err := os.Open(path)
+	if err != nil {
+		return cfg, fmt.Errorf("failed to open config file: %w", err)
+	}
+
+	decoder := yaml.NewDecoder(file)
+	decoder.KnownFields(true)
+
+	err = decoder.Decode(&cfg)
+	if err != nil {
+		return cfg, fmt.Errorf("failed to decode config: %w", err)
+	}
+
+	return cfg, nil
 }
