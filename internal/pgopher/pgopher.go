@@ -25,13 +25,15 @@ func (s *Server) Run(ctx context.Context) error {
 
 	go s.startScheduler(ctx, wg)
 
-	http.HandleFunc("/_ready", readinessProbe)
-	http.HandleFunc("/_live", livenessProbe)
-	http.HandleFunc("/api/v1/profile/", s.handleProfile)
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/_ready", readinessProbe)
+	mux.HandleFunc("/_live", livenessProbe)
+	mux.HandleFunc("/api/v1/profile/", s.handleProfile)
 
 	httpServer := &http.Server{
 		Addr:    s.cfg.ListenAddress,
-		Handler: http.DefaultServeMux,
+		Handler: mux,
 	}
 
 	go func() {

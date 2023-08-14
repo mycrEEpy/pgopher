@@ -3,9 +3,10 @@ package pgopher
 import "time"
 
 type Config struct {
-	ListenAddress    string            `yaml:"listenAddress"`
-	ProfilingTargets []ProfilingTarget `yaml:"profilingTargets"`
-	Sink             Sink              `yaml:"sink"`
+	ListenAddress      string            `yaml:"listenAddress"`
+	PprofListenAddress string            `yaml:"pprofListenAddress"`
+	ProfilingTargets   []ProfilingTarget `yaml:"profilingTargets"`
+	Sink               Sink              `yaml:"sink"`
 }
 
 type ProfilingTarget struct {
@@ -26,8 +27,9 @@ type FileSinkOptions struct {
 
 func DefaultConfig() Config {
 	return Config{
-		ListenAddress:    ":8000",
-		ProfilingTargets: make([]ProfilingTarget, 0),
+		ListenAddress:      ":8000",
+		PprofListenAddress: "localhost:8010",
+		ProfilingTargets:   make([]ProfilingTarget, 0),
 		Sink: Sink{
 			Type: "file",
 			FileSinkOptions: FileSinkOptions{

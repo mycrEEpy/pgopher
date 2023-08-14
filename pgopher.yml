@@ -1,6 +1,7 @@
 listenAddress: ":8000"
+pprofListenAddress: "localhost:8010"
 profilingTargets:
-  - name: test
+  - name: self
     url: http://localhost:8010/debug/pprof/profile
     duration: 5s
     schedule: "* * * * *"

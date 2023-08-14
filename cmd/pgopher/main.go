@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"log/slog"
+	"net/http"
+	"net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,6 +19,7 @@ var (
 	logLevel      = flag.String("log-level", "INFO", "log level")
 	logJsonFormat = flag.Bool("log-json", false, "log in json format")
 	cfgFile       = flag.String("config", "pgopher.yml", "config file")
+	pprofEnabled  = flag.Bool("pprof", false, "enable pprof endpoint")
 )
 
 func init() {
@@ -63,6 +67,21 @@ func main() {
 	}
 
 	slog.Debug("loaded configuration", slog.String("file", *cfgFile), slog.Any("config", cfg))
+
+	if *pprofEnabled {
+		go func() {
+			pprofMux := http.NewServeMux()
+			pprofMux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+			pprofServer := &http.Server{Addr: cfg.PprofListenAddress, Handler: pprofMux}
+
+			slog.Info("starting pprof server", slog.String("listenAddr", cfg.PprofListenAddress))
+
+			pprofErr := pprofServer.ListenAndServe()
+			if pprofErr != nil && !errors.Is(err, http.ErrServerClosed) {
+				slog.Error("pprof server failed", slog.String("err", pprofErr.Error()))
+			}
+		}()
+	}
 
 	err = pgopher.NewServer(cfg).Run(ctx)
 	if err != nil {
