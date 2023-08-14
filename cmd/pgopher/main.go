@@ -28,7 +28,7 @@ func setupLogger() {
 
 	err := level.UnmarshalText([]byte(*logLevel))
 	if err != nil {
-		slog.Error("failed to parse log level", slog.String("error", err.Error()))
+		slog.Error("failed to parse log level", slog.String("err", err.Error()))
 		os.Exit(1)
 	}
 
@@ -47,7 +47,7 @@ func main() {
 
 	file, err := os.Open(*cfgFile)
 	if err != nil {
-		slog.Error("failed to open config file", slog.String("error", err.Error()))
+		slog.Error("failed to open config file", slog.String("err", err.Error()))
 		os.Exit(1)
 	}
 
@@ -58,7 +58,7 @@ func main() {
 
 	err = decoder.Decode(&cfg)
 	if err != nil {
-		slog.Error("failed to decode config", slog.String("error", err.Error()))
+		slog.Error("failed to decode config", slog.String("err", err.Error()))
 		os.Exit(1)
 	}
 
@@ -66,7 +66,7 @@ func main() {
 
 	err = pgopher.NewServer(cfg).Run(ctx)
 	if err != nil {
-		slog.Error("failed to run server", slog.String("error", err.Error()))
+		slog.Error("failed to run server", slog.String("err", err.Error()))
 		os.Exit(1)
 	}
 }

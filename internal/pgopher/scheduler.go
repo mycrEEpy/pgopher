@@ -19,11 +19,12 @@ func (s *Server) startScheduler(ctx context.Context, wg *sync.WaitGroup) {
 		logger := slog.With(slog.String("target", name))
 
 		_, err := scheduler.AddJob(target.Schedule, profileCollector{
-			target: target,
+			ctx:    ctx,
 			logger: *logger,
+			target: target,
 		})
 		if err != nil {
-			logger.Error("failed to create collector for profiling target", slog.String("error", err.Error()))
+			logger.Error("failed to create collector for profiling target", slog.String("err", err.Error()))
 			continue
 		}
 	}

@@ -2,6 +2,7 @@ package pgopher
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -9,16 +10,25 @@ import (
 )
 
 type profileCollector struct {
-	target ProfilingTarget
+	ctx    context.Context
 	logger slog.Logger
+	target ProfilingTarget
 }
 
 func (p profileCollector) Run() {
 	p.logger.Info("collecting profile")
 
-	resp, err := http.Get(fmt.Sprintf("%s?seconds=%d", p.target.URL, int(p.target.Duration.Seconds())))
+	url := fmt.Sprintf("%s?seconds=%d", p.target.URL, int(p.target.Duration.Seconds()))
+
+	req, err := http.NewRequestWithContext(p.ctx, http.MethodGet, url, nil)
 	if err != nil {
-		p.logger.Error("failed to collect profile", slog.String("error", err.Error()))
+		p.logger.Error("failed to create http request", slog.String("err", err.Error()))
+		return
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		p.logger.Error("failed to collect profile", slog.String("err", err.Error()))
 		return
 	}
 
@@ -28,7 +38,7 @@ func (p profileCollector) Run() {
 
 	_, err = io.Copy(buf, resp.Body)
 	if err != nil {
-		p.logger.Error("failed to read body", slog.String("error", err.Error()))
+		p.logger.Error("failed to read body", slog.String("err", err.Error()))
 		return
 	}
 }
