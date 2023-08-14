@@ -46,7 +46,7 @@ spec:
             - -log-json=true
             - -config=/opt/pgopher/cfg/pgopher.yml
           command:
-            - /pgopher
+            - /opt/pgopher/pgopher
           image: ghcr.io/mycreepy/pgopher:0.3.0
           livenessProbe:
             httpGet:

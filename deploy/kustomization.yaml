@@ -9,4 +9,4 @@ resources:
 configMapGenerator:
   - name: pgopher
     files:
-      - config.yml
+      - pgopher.yml
