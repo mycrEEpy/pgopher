@@ -1,0 +1,53 @@
+project_name: pgopher
+
+builds:
+  - id: pgopher
+    main: ./cmd/pgopher
+    binary: pgopher
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+dockers:
+  - use: buildx
+    goos: linux
+    goarch: amd64
+    image_templates:
+      - ghcr.io/mycreepy/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/mycreepy/{{ .ProjectName }}:latest-amd64
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--build-arg=BINARY_PATH={{.ProjectName}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+
+  - use: buildx
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - ghcr.io/mycreepy/{{ .ProjectName }}:{{ .Version }}-arm64v8
+      - ghcr.io/mycreepy/{{ .ProjectName }}:latest-arm64v8
+    build_flag_templates:
+      - "--platform=linux/arm64/v8"
+      - "--build-arg=BINARY_PATH={{.ProjectName}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+
+docker_manifests:
+  - name_template: ghcr.io/mycreepy/{{ .ProjectName }}:{{ .Version }}
+    image_templates:
+      - ghcr.io/mycreepy/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/mycreepy/{{ .ProjectName }}:{{ .Version }}-arm64v8
+
+  - name_template: ghcr.io/mycreepy/{{ .ProjectName }}:latest
+    image_templates:
+      - ghcr.io/mycreepy/{{ .ProjectName }}:latest-amd64
+      - ghcr.io/mycreepy/{{ .ProjectName }}:latest-arm64v8
