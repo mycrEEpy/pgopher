@@ -17,6 +17,7 @@ import (
 var (
 	logLevel      = flag.String("log-level", "INFO", "log level")
 	logJsonFormat = flag.Bool("log-json", false, "log in json format")
+	logSource     = flag.Bool("log-source", false, "log source code position")
 	cfgFile       = flag.String("config", "pgopher.yml", "config file")
 	pprofEnabled  = flag.Bool("pprof", false, "enable pprof endpoint")
 )
@@ -35,10 +36,15 @@ func setupLogger() {
 		os.Exit(1)
 	}
 
-	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level}))
+	handler := &slog.HandlerOptions{
+		AddSource: *logSource,
+		Level:     level,
+	}
+
+	logger := slog.New(slog.NewTextHandler(os.Stderr, handler))
 
 	if *logJsonFormat {
-		logger = slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: level}))
+		logger = slog.New(slog.NewJSONHandler(os.Stderr, handler))
 	}
 
 	slog.SetDefault(logger)
