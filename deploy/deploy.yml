@@ -44,10 +44,10 @@ spec:
         - args:
             - -log-level=INFO
             - -log-json=true
-            - -config=/cfg/pgopher.yml
+            - -config=/opt/pgopher/cfg/pgopher.yml
           command:
             - /pgopher
-          image: ghcr.io/mycreepy/pgopher:0.2.1
+          image: ghcr.io/mycreepy/pgopher:0.3.0
           livenessProbe:
             httpGet:
               path: /_live
@@ -72,9 +72,9 @@ spec:
               cpu: 50m
               memory: 128Mi
           volumeMounts:
-            - mountPath: /cfg
+            - mountPath: /opt/pgopher/cfg
               name: config
-            - mountPath: /profiles
+            - mountPath: /opt/pgopher/profiles
               name: profiles
           securityContext:
             allowPrivilegeEscalation: false
