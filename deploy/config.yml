@@ -1,0 +1,6 @@
+listenAddress: ":8000"
+profilingTargets: []
+sink:
+  type: file
+  fileSinkOptions:
+    folder: profiles

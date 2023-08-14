@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgopher
+  namespace: default
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: pgopher
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgopher
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pgopher
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: pgopher
+      labels:
+        app.kubernetes.io/name: pgopher
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - arm64
+                  - key: kubernetes.io/os
+                    operator: In
+                    values:
+                      - linux
+      containers:
+        - args:
+            - -log-level=INFO
+            - -log-json=true
+            - -config=/cfg/pgopher.yml
+          command:
+            - /pgopher
+          image: ghcr.io/mycreepy/pgopher:0.1.0
+          livenessProbe:
+            httpGet:
+              path: /_live
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          name: pgopher
+          ports:
+            - containerPort: 8000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /_ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          volumeMounts:
+            - mountPath: /cfg
+              name: config
+            - mountPath: /profiles
+              name: profiles
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 65
+      volumes:
+        - name: config
+          configMap:
+            name: pgopher
+        - name: profiles
+          emptyDir: {}
