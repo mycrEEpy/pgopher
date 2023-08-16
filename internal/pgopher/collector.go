@@ -9,13 +9,17 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type profileCollector struct {
-	ctx    context.Context
-	logger slog.Logger
-	target ProfilingTarget
-	sink   Sink
+	ctx      context.Context
+	logger   slog.Logger
+	target   ProfilingTarget
+	sink     Sink
+	s3Client *s3.Client
 }
 
 func (p profileCollector) Run() {
@@ -59,7 +63,17 @@ func (p profileCollector) Run() {
 
 		_, err = file.Write(buf.Bytes())
 		if err != nil {
-			p.logger.Error("failed to write to sink file", slog.String("err", err.Error()), slog.String("file", file.Name()))
+			p.logger.Error("failed to write to file sink", slog.String("err", err.Error()), slog.String("file", file.Name()))
+			return
+		}
+	case "s3":
+		_, err = p.s3Client.PutObject(p.ctx, &s3.PutObjectInput{
+			Bucket: aws.String(p.sink.S3SinkOptions.Bucket),
+			Key:    aws.String(fmt.Sprintf("profile=%s/%s.pgo", p.target.Name, p.target.Name)),
+			Body:   buf,
+		})
+		if err != nil {
+			p.logger.Error("failed to write to s3 sink", slog.String("err", err.Error()), slog.String("bucket", p.sink.S3SinkOptions.Bucket))
 			return
 		}
 	default:

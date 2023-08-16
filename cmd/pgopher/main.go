@@ -66,9 +66,15 @@ func main() {
 		go pprofServer(cfg.PprofListenAddress)
 	}
 
-	err = pgopher.NewServer(cfg).Run(ctx)
+	s, err := pgopher.NewServer(cfg)
 	if err != nil {
-		slog.Error("failed to run server", slog.String("err", err.Error()))
+		slog.Error("failed to create pgopher server", slog.String("err", err.Error()))
+		os.Exit(1)
+	}
+
+	err = s.Run(ctx)
+	if err != nil {
+		slog.Error("failed to run pgopher server", slog.String("err", err.Error()))
 		os.Exit(1)
 	}
 }

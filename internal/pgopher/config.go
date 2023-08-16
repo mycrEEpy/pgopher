@@ -25,10 +25,15 @@ type ProfilingTarget struct {
 type Sink struct {
 	Type            string          `yaml:"type"`
 	FileSinkOptions FileSinkOptions `yaml:"fileSinkOptions"`
+	S3SinkOptions   S3SinkOptions   `yaml:"s3SinkOptions"`
 }
 
 type FileSinkOptions struct {
 	Folder string `yaml:"folder"`
+}
+
+type S3SinkOptions struct {
+	Bucket string `yaml:"bucket"`
 }
 
 func DefaultConfig() Config {

@@ -7,16 +7,38 @@ import (
 	"log/slog"
 	"net/http"
 	"sync"
+
+	awsConfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
-	cfg Config
+	cfg      Config
+	mux      *echo.Echo
+	s3Client *s3.Client
 }
 
-func NewServer(cfg Config) *Server {
-	return &Server{
+func NewServer(cfg Config) (*Server, error) {
+	s := &Server{
 		cfg: cfg,
+		mux: echo.New(),
 	}
+
+	s.mux.GET("/_ready", readinessProbe)
+	s.mux.GET("/_live", livenessProbe)
+	s.mux.GET("/api/v1/profile/:profile", s.handleProfile)
+
+	if cfg.Sink.Type == "s3" {
+		sdkConfig, err := awsConfig.LoadDefaultConfig(context.Background())
+		if err != nil {
+			return nil, fmt.Errorf("failed to load aws config: %w", err)
+		}
+
+		s.s3Client = s3.NewFromConfig(sdkConfig)
+	}
+
+	return s, nil
 }
 
 func (s *Server) Run(ctx context.Context) error {
@@ -25,21 +47,10 @@ func (s *Server) Run(ctx context.Context) error {
 
 	go s.startScheduler(ctx, wg)
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/_ready", readinessProbe)
-	mux.HandleFunc("/_live", livenessProbe)
-	mux.HandleFunc("/api/v1/profile/", s.handleProfile)
-
-	httpServer := &http.Server{
-		Addr:    s.cfg.ListenAddress,
-		Handler: mux,
-	}
-
 	go func() {
 		<-ctx.Done()
 
-		err := httpServer.Shutdown(context.Background())
+		err := s.mux.Shutdown(context.Background())
 		if err != nil {
 			slog.Error("failed to shutdown http server", slog.String("err", err.Error()))
 		}
@@ -47,7 +58,7 @@ func (s *Server) Run(ctx context.Context) error {
 
 	slog.Info("starting http server", slog.String("listenAddr", s.cfg.ListenAddress))
 
-	err := httpServer.ListenAndServe()
+	err := s.mux.Start(s.cfg.ListenAddress)
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return fmt.Errorf("http server failed: %w", err)
 	}
