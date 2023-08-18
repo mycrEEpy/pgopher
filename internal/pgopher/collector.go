@@ -85,7 +85,7 @@ func (p profileCollector) Run() {
 	case "kubernetes":
 		name := fmt.Sprintf("pgopher-profile-%s", p.target.Name)
 
-		profileData := make([]byte, 0, buf.Len())
+		profileData := make([]byte, base64.StdEncoding.EncodedLen(buf.Len()))
 
 		base64.StdEncoding.Encode(profileData, buf.Bytes())
 
