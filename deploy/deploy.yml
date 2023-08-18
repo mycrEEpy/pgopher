@@ -48,7 +48,7 @@ spec:
             - -config=/opt/pgopher/cfg/pgopher.yml
           command:
             - /opt/pgopher/pgopher
-          image: ghcr.io/mycreepy/pgopher:0.6.4
+          image: ghcr.io/mycreepy/pgopher:0.6.5
           livenessProbe:
             httpGet:
               path: /_live
