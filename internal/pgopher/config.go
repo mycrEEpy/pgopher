@@ -23,9 +23,10 @@ type ProfilingTarget struct {
 }
 
 type Sink struct {
-	Type            string          `yaml:"type"`
-	FileSinkOptions FileSinkOptions `yaml:"fileSinkOptions"`
-	S3SinkOptions   S3SinkOptions   `yaml:"s3SinkOptions"`
+	Type                  string                `yaml:"type"`
+	FileSinkOptions       FileSinkOptions       `yaml:"fileSinkOptions"`
+	S3SinkOptions         S3SinkOptions         `yaml:"s3SinkOptions"`
+	KubernetesSinkOptions KubernetesSinkOptions `yaml:"kubernetesSinkOptions"`
 }
 
 type FileSinkOptions struct {
@@ -34,6 +35,11 @@ type FileSinkOptions struct {
 
 type S3SinkOptions struct {
 	Bucket string `yaml:"bucket"`
+}
+
+type KubernetesSinkOptions struct {
+	APIServerURL string `yaml:"apiServerURL"`
+	Namespace    string `yaml:"namespace"`
 }
 
 func DefaultConfig() Config {

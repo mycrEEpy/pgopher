@@ -12,14 +12,19 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	core "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 type profileCollector struct {
-	ctx      context.Context
-	logger   slog.Logger
-	target   ProfilingTarget
-	sink     Sink
-	s3Client *s3.Client
+	ctx        context.Context
+	logger     slog.Logger
+	target     ProfilingTarget
+	sink       Sink
+	s3Client   *s3.Client
+	kubeClient *kubernetes.Clientset
 }
 
 func (p profileCollector) Run() {
@@ -74,6 +79,42 @@ func (p profileCollector) Run() {
 		})
 		if err != nil {
 			p.logger.Error("failed to write to s3 sink", slog.String("err", err.Error()), slog.String("bucket", p.sink.S3SinkOptions.Bucket))
+			return
+		}
+	case "kubernetes":
+		name := fmt.Sprintf("pgopher-profile-%s", p.target.Name)
+
+		client := p.kubeClient.CoreV1().Secrets(p.sink.KubernetesSinkOptions.Namespace)
+
+		secret := core.Secret{
+			ObjectMeta: meta.ObjectMeta{
+				Name:      name,
+				Namespace: p.sink.KubernetesSinkOptions.Namespace,
+			},
+			StringData: make(map[string]string),
+		}
+
+		secret.StringData["profile"] = buf.String()
+
+		_, err := client.Get(p.ctx, name, meta.GetOptions{})
+		if err != nil {
+			if errors.IsNotFound(err) {
+				_, err := client.Create(p.ctx, &secret, meta.CreateOptions{})
+				if err != nil {
+					slog.Error("failed to create secret", slog.String("err", err.Error()))
+					return
+				}
+
+				return
+			} else {
+				slog.Error("failed to get secret", slog.String("err", err.Error()))
+				return
+			}
+		}
+
+		_, err = client.Update(p.ctx, &secret, meta.UpdateOptions{})
+		if err != nil {
+			slog.Error("failed to update secret", slog.String("err", err.Error()))
 			return
 		}
 	default:

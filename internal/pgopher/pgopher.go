@@ -6,17 +6,21 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"sync"
 
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/labstack/echo/v4"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type Server struct {
-	cfg      Config
-	mux      *echo.Echo
-	s3Client *s3.Client
+	cfg        Config
+	mux        *echo.Echo
+	s3Client   *s3.Client
+	kubeClient *kubernetes.Clientset
 }
 
 func NewServer(cfg Config) (*Server, error) {
@@ -39,6 +43,18 @@ func NewServer(cfg Config) (*Server, error) {
 		}
 
 		s.s3Client = s3.NewFromConfig(sdkConfig)
+	}
+
+	if cfg.Sink.Type == "kubernetes" {
+		kubeCfg, err := clientcmd.BuildConfigFromFlags(cfg.Sink.KubernetesSinkOptions.APIServerURL, os.Getenv("KUBECONFIG"))
+		if err != nil {
+			return nil, fmt.Errorf("failed to create kubernetes config: %w", err)
+		}
+
+		s.kubeClient, err = kubernetes.NewForConfig(kubeCfg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create kubernetes client: %w", err)
+		}
 	}
 
 	return s, nil
