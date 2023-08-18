@@ -3,7 +3,6 @@ package pgopher
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"log/slog"
@@ -85,10 +84,6 @@ func (p profileCollector) Run() {
 	case "kubernetes":
 		name := fmt.Sprintf("pgopher-profile-%s", p.target.Name)
 
-		profileData := make([]byte, base64.StdEncoding.EncodedLen(buf.Len()))
-
-		base64.StdEncoding.Encode(profileData, buf.Bytes())
-
 		client := p.kubeClient.CoreV1().Secrets(p.sink.KubernetesSinkOptions.Namespace)
 
 		secret := core.Secret{
@@ -99,7 +94,7 @@ func (p profileCollector) Run() {
 			StringData: make(map[string]string),
 		}
 
-		secret.StringData["profile"] = string(profileData)
+		secret.StringData["profile"] = buf.String()
 
 		_, err := client.Get(p.ctx, name, meta.GetOptions{})
 		if err != nil {

@@ -2,7 +2,6 @@ package pgopher
 
 import (
 	"bytes"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"log/slog"
@@ -84,15 +83,7 @@ func (s *Server) handleProfile(ctx echo.Context) error {
 		defer file.Close()
 		defer os.Remove(file.Name())
 
-		profileData := make([]byte, base64.StdEncoding.DecodedLen(len(resp.Data["profile"])))
-
-		_, err = base64.StdEncoding.Decode(profileData, resp.Data["profile"])
-		if err != nil {
-			logger.Error("failed to decode profile data", slog.String("err", err.Error()))
-			return ctx.NoContent(http.StatusInternalServerError)
-		}
-
-		_, err = io.Copy(file, bytes.NewBuffer(profileData))
+		_, err = io.Copy(file, bytes.NewBuffer(resp.Data["profile"]))
 		if err != nil {
 			logger.Error("failed to write temporary file", slog.String("err", err.Error()))
 			return ctx.NoContent(http.StatusInternalServerError)
