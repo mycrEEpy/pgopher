@@ -8,5 +8,15 @@
   ],
   "kubernetes": {
     "fileMatch": ["deploy/.+\\.yml$"]
-  }
+  },
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^github.com/aws/aws-sdk-go-v2.*"],
+      "groupName": "aws-sdk-go-v2"
+    },
+    {
+      "matchPackagePatterns": ["^k8s.io/.*"],
+      "groupName": "k8s.io"
+    }
+  ]
 }
