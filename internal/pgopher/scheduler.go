@@ -11,7 +11,7 @@ import (
 func (s *Server) startScheduler(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	slog.Info("starting scheduler", slog.Int("profilingTargets", len(s.cfg.ProfilingTargets)))
+	slog.Info("starting scheduler", slog.Int("profilingTargets", len(s.cfg.ProfilingTargets)), slog.String("sink", s.cfg.Sink.Type))
 
 	scheduler := cron.New()
 
