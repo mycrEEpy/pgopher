@@ -84,7 +84,7 @@ func (s *Server) handleProfile(ctx echo.Context) error {
 		defer file.Close()
 		defer os.Remove(file.Name())
 
-		var profileData []byte
+		profileData := make([]byte, 0, len(resp.Data["profile"]))
 
 		_, err = base64.StdEncoding.Decode(profileData, resp.Data["profile"])
 		if err != nil {
