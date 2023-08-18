@@ -67,7 +67,7 @@ func (s *Server) handleProfile(ctx echo.Context) error {
 
 		return ctx.File(file.Name())
 	case "kubernetes":
-		name := fmt.Sprintf("pgopher-profile-%s", profile)
+		name := fmt.Sprintf("pgopher-profile-%s", strings.TrimSuffix(profile, ".pgo"))
 
 		resp, err := s.kubeClient.CoreV1().Secrets(s.cfg.Sink.KubernetesSinkOptions.Namespace).Get(ctx.Request().Context(), name, meta.GetOptions{})
 		if err != nil {
