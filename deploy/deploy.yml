@@ -26,6 +26,7 @@ spec:
       labels:
         app.kubernetes.io/name: pgopher
     spec:
+      serviceAccountName: pgopher
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

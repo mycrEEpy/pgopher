@@ -5,6 +5,7 @@ commonLabels:
   app.kubernetes.io/name: pgopher
 resources:
   - namespace.yml
+  - rbac.yml
   - deploy.yml
 configMapGenerator:
   - name: pgopher
