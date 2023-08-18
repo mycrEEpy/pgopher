@@ -25,6 +25,9 @@ func NewServer(cfg Config) (*Server, error) {
 		mux: echo.New(),
 	}
 
+	s.mux.HideBanner = true
+	s.mux.HidePort = true
+
 	s.mux.GET("/_ready", readinessProbe)
 	s.mux.GET("/_live", livenessProbe)
 	s.mux.GET("/api/v1/profile/:profile", s.handleProfile)
