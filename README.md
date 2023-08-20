@@ -2,9 +2,7 @@
 
 `pgopher` schedules the collection of CPU pprof profiles and allows you to download them via an API. These profiles can then be used for PGO during your next compilation.
 
-## Description
-
-### What is PGO?
+## What is PGO?
 
 [Profile-guided optimization](https://go.dev/doc/pgo) (PGO), also known as feedback-directed optimization (FDO), is a compiler optimization technique that feeds information (a profile) from representative runs of the application back into to the compiler for the next build of the application, which uses that information to make more informed optimization decisions. For example, the compiler may decide to more aggressively inline functions which the profile indicates are called frequently.
 
