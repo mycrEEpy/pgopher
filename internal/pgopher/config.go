@@ -52,6 +52,9 @@ func DefaultConfig() Config {
 			FileSinkOptions: FileSinkOptions{
 				Folder: "profiles",
 			},
+			KubernetesSinkOptions: KubernetesSinkOptions{
+				Namespace: "pgopher",
+			},
 		},
 	}
 }
