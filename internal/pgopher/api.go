@@ -16,14 +16,6 @@ import (
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func readinessProbe(ctx echo.Context) error {
-	return ctx.NoContent(http.StatusOK)
-}
-
-func livenessProbe(ctx echo.Context) error {
-	return ctx.NoContent(http.StatusOK)
-}
-
 func (s *Server) handleProfile(ctx echo.Context) error {
 	profile := ctx.Param("profile")
 
