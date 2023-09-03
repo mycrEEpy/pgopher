@@ -1,4 +1,9 @@
 listenAddress: ":8000"
-profilingTargets: []
+pprofListenAddress: ":6060"
+profilingTargets:
+  - name: self
+    url: http://localhost:6060/debug/pprof/profile
+    duration: 10s
+    schedule: "0 * * * *"
 sink:
   type: kubernetes
