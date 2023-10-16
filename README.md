@@ -16,6 +16,12 @@
 kubectl apply -k deploy/
 ```
 
+3. Download profiles:
+
+```sh
+curl http://[url]/api/v1/profile/[name] -o default.pgo
+```
+
 ## Contributing
 
 tba
