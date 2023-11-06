@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.22.1
-	github.com/aws/aws-sdk-go-v2/config v1.22.0
+	github.com/aws/aws-sdk-go-v2/config v1.22.1
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.42.0
 	github.com/labstack/echo/v4 v4.11.2
 	github.com/robfig/cron/v3 v3.0.1
