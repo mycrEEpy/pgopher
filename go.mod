@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.23.1
-	github.com/aws/aws-sdk-go-v2/config v1.25.4
+	github.com/aws/aws-sdk-go-v2/config v1.25.5
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.43.1
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/robfig/cron/v3 v3.0.1
@@ -16,7 +16,7 @@ require (
 
 require (
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.5.1 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.16.3 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.16.4 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.5 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.4 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.4 // indirect
