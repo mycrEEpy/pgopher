@@ -11,6 +11,10 @@
   },
   "packageRules": [
     {
+      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
       "matchPackagePatterns": ["^github.com/aws/aws-sdk-go-v2.*"],
       "groupName": "aws-sdk-go-v2"
     },
