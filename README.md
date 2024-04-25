@@ -1,5 +1,8 @@
 # pgopher
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/mycreepy/pgopher)](https://goreportcard.com/report/github.com/mycreepy/pgopher)
+[![Known Vulnerabilities](https://snyk.io/test/github/mycrEEpy/pgopher/badge.svg)](https://snyk.io/test/github/mycrEEpy/pgopher)
+
 `pgopher` schedules the collection of CPU pprof profiles and allows you to download them via an API. These profiles can then be used for PGO during your next compilation.
 
 ## What is PGO?
