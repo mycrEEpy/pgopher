@@ -1,0 +1,5 @@
+dependencies:
+  go.dev: 1.22.2
+  goreleaser.com: 1.25.1
+  golangci-lint.run: 1.58.0
+  gnu.org/make: 4.3.0
