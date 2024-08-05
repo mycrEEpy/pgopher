@@ -15,43 +15,14 @@ import (
 )
 
 var (
-	logLevel      = flag.String("log-level", "INFO", "log level")
-	logJsonFormat = flag.Bool("log-json", false, "log in json format")
-	logSource     = flag.Bool("log-source", false, "log source code position")
-	cfgFile       = flag.String("config", "pgopher.yml", "config file")
-	pprofEnabled  = flag.Bool("pprof", false, "enable pprof endpoint")
+	cfgFile      = flag.String("config", "pgopher.yml", "config file")
+	pprofEnabled = flag.Bool("pprof", false, "enable pprof endpoint")
 )
 
-func init() {
-	flag.Parse()
-	setupLogger()
-}
-
-func setupLogger() {
-	level := &slog.LevelVar{}
-
-	err := level.UnmarshalText([]byte(*logLevel))
-	if err != nil {
-		slog.Error("failed to parse log level", slog.String("err", err.Error()))
-		os.Exit(1)
-	}
-
-	handler := &slog.HandlerOptions{
-		AddSource: *logSource,
-		Level:     level,
-	}
-
-	logger := slog.New(slog.NewTextHandler(os.Stderr, handler))
-
-	if *logJsonFormat {
-		logger = slog.New(slog.NewJSONHandler(os.Stderr, handler))
-	}
-
-	slog.SetDefault(logger)
-}
-
 func main() {
-	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+	flag.Parse()
+
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
 	cfg, err := pgopher.LoadConfig(*cfgFile)
@@ -60,16 +31,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	slog.Debug("loaded configuration", slog.String("file", *cfgFile), slog.Any("config", cfg))
-
-	if *pprofEnabled {
-		go pprofServer(cfg.PprofListenAddress)
-	}
-
 	s, err := pgopher.NewServer(cfg)
 	if err != nil {
 		slog.Error("failed to create pgopher server", slog.String("err", err.Error()))
 		os.Exit(1)
+	}
+
+	if *pprofEnabled {
+		go pprofServer(cfg.PprofListenAddress, s.Logger)
 	}
 
 	err = s.Run(ctx)
@@ -79,16 +48,16 @@ func main() {
 	}
 }
 
-func pprofServer(listenAddr string) {
+func pprofServer(listenAddr string, logger *slog.Logger) {
 	pprofMux := http.NewServeMux()
 	pprofMux.HandleFunc("/debug/pprof/profile", pprof.Profile)
 
 	server := &http.Server{Addr: listenAddr, Handler: pprofMux}
 
-	slog.Info("starting pprof server", slog.String("listenAddr", listenAddr))
+	logger.Info("starting pprof server", slog.String("listenAddr", listenAddr))
 
 	err := server.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		slog.Error("pprof server failed", slog.String("err", err.Error()))
+		logger.Error("pprof server failed", slog.String("err", err.Error()))
 	}
 }

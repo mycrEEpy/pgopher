@@ -11,12 +11,12 @@ import (
 func (s *Server) startScheduler(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	slog.Info("starting scheduler", slog.Int("profilingTargets", len(s.cfg.ProfilingTargets)), slog.String("sink", s.cfg.Sink.Type))
+	s.Logger.Info("starting scheduler", slog.Int("profilingTargets", len(s.cfg.ProfilingTargets)), slog.String("sink", s.cfg.Sink.Type))
 
 	scheduler := cron.New()
 
 	for _, target := range s.cfg.ProfilingTargets {
-		logger := slog.With(slog.String("target", target.Name))
+		logger := s.Logger.With(slog.String("target", target.Name))
 
 		_, err := scheduler.AddJob(target.Schedule, profileCollector{
 			ctx:        ctx,

@@ -19,7 +19,7 @@ import (
 func (s *Server) handleProfile(ctx echo.Context) error {
 	profile := ctx.Param("profile")
 
-	logger := slog.With(slog.String("profile", profile))
+	logger := s.Logger.With(slog.String("profile", profile))
 
 	if len(profile) == 0 || strings.Contains(profile, "..") {
 		logger.Error("invalid profile")

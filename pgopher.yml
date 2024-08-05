@@ -1,3 +1,4 @@
+logLevel: debug
 listenAddress: ":8000"
 pprofListenAddress: "localhost:8010"
 profilingTargets:

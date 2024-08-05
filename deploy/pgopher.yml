@@ -1,3 +1,4 @@
+logLevel: info
 listenAddress: ":8000"
 pprofListenAddress: ":6060"
 profilingTargets:

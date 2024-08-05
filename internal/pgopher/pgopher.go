@@ -11,30 +11,28 @@ import (
 
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/labstack/echo/v4"
+	"github.com/mycreepy/box"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 type Server struct {
+	*box.Box
+
 	cfg        Config
-	mux        *echo.Echo
 	s3Client   *s3.Client
 	kubeClient *kubernetes.Clientset
 }
 
 func NewServer(cfg Config) (*Server, error) {
 	s := &Server{
+		Box: box.New(box.WithConfig(cfg.Config), box.WithWebServer()),
 		cfg: cfg,
-		mux: echo.New(),
 	}
 
-	s.mux.HideBanner = true
-	s.mux.HidePort = true
+	s.Logger.Debug("loaded configuration", slog.Any("config", cfg))
 
-	s.mux.GET("/_ready", readinessProbe)
-	s.mux.GET("/_live", livenessProbe)
-	s.mux.GET("/api/v1/profile/:profile", s.handleProfile)
+	s.WebServer.GET("/api/v1/profile/:profile", s.handleProfile)
 
 	if cfg.Sink.Type == "s3" {
 		sdkConfig, err := awsConfig.LoadDefaultConfig(context.Background())
@@ -66,25 +64,16 @@ func (s *Server) Run(ctx context.Context) error {
 
 	go s.startScheduler(ctx, wg)
 
-	go func() {
-		<-ctx.Done()
+	s.Logger.Info("starting http server", slog.String("listenAddr", s.cfg.ListenAddress))
 
-		err := s.mux.Shutdown(context.Background())
-		if err != nil {
-			slog.Error("failed to shutdown http server", slog.String("err", err.Error()))
-		}
-	}()
-
-	slog.Info("starting http server", slog.String("listenAddr", s.cfg.ListenAddress))
-
-	err := s.mux.Start(s.cfg.ListenAddress)
+	err := s.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return fmt.Errorf("http server failed: %w", err)
 	}
 
 	wg.Wait()
 
-	slog.Info("graceful shutdown completed, see you next time!")
+	s.Logger.Info("graceful shutdown completed, see you next time!")
 
 	return nil
 }

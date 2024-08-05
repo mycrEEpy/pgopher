@@ -5,11 +5,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/mycreepy/box"
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	ListenAddress      string            `yaml:"listenAddress"`
+	box.Config `yaml:",inline"`
+
 	PprofListenAddress string            `yaml:"pprofListenAddress"`
 	ProfilingTargets   []ProfilingTarget `yaml:"profilingTargets"`
 	Sink               Sink              `yaml:"sink"`
@@ -44,7 +46,6 @@ type KubernetesSinkOptions struct {
 
 func DefaultConfig() Config {
 	return Config{
-		ListenAddress:      ":8000",
 		PprofListenAddress: "localhost:8010",
 		ProfilingTargets:   make([]ProfilingTarget, 0),
 		Sink: Sink{
