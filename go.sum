@@ -108,8 +108,8 @@ github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9G
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
-github.com/mycreepy/box v0.4.0 h1:q4qAH3Sw4oS5G6z9v5aaKFYmx1pYD8xLLxZnF0nrk40=
-github.com/mycreepy/box v0.4.0/go.mod h1:9IQGEZa4LarvKBufmuLfUxrF4KIH9s8/h+CnL3Aw+PU=
+github.com/mycreepy/box v0.5.0 h1:6qqx4K6xEnjQecScxYq9pX/MS5BVkqKV7z8b4l75M64=
+github.com/mycreepy/box v0.5.0/go.mod h1:9IQGEZa4LarvKBufmuLfUxrF4KIH9s8/h+CnL3Aw+PU=
 github.com/onsi/ginkgo/v2 v2.15.0 h1:79HwNRBAZHOEwrczrgSOPy+eFTTlIGELKy5as+ClttY=
 github.com/onsi/ginkgo/v2 v2.15.0/go.mod h1:HlxMHtYF57y6Dpf+mc5529KKmSq9h2FpCF+/ZkwUxKM=
 github.com/onsi/gomega v1.31.0 h1:54UJxxj6cPInHS3a35wm6BK/F9nHYueZ1NVujHDrnXE=
