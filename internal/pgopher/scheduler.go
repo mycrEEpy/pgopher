@@ -1,14 +1,13 @@
 package pgopher
 
 import (
-	"context"
 	"log/slog"
 	"sync"
 
 	"github.com/robfig/cron/v3"
 )
 
-func (s *Server) startScheduler(ctx context.Context, wg *sync.WaitGroup) {
+func (s *Server) startScheduler(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	s.Logger.Info("starting scheduler", slog.Int("profilingTargets", len(s.cfg.ProfilingTargets)), slog.String("sink", s.cfg.Sink.Type))
@@ -19,7 +18,7 @@ func (s *Server) startScheduler(ctx context.Context, wg *sync.WaitGroup) {
 		logger := s.Logger.With(slog.String("target", target.Name))
 
 		_, err := scheduler.AddJob(target.Schedule, profileCollector{
-			ctx:        ctx,
+			ctx:        s.Context,
 			logger:     *logger,
 			target:     target,
 			sink:       s.cfg.Sink,
@@ -33,7 +32,7 @@ func (s *Server) startScheduler(ctx context.Context, wg *sync.WaitGroup) {
 	}
 
 	go func() {
-		<-ctx.Done()
+		<-s.Context.Done()
 		<-scheduler.Stop().Done()
 	}()
 

@@ -58,11 +58,11 @@ func NewServer(cfg Config) (*Server, error) {
 	return s, nil
 }
 
-func (s *Server) Run(ctx context.Context) error {
+func (s *Server) Run() error {
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
-	go s.startScheduler(ctx, wg)
+	go s.startScheduler(wg)
 
 	s.Logger.Info("starting http server", slog.String("listenAddr", s.cfg.ListenAddress))
 

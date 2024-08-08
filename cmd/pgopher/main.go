@@ -1,15 +1,12 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"flag"
 	"log/slog"
 	"net/http"
 	"net/http/pprof"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/mycreepy/pgopher/internal/pgopher"
 )
@@ -21,9 +18,6 @@ var (
 
 func main() {
 	flag.Parse()
-
-	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer cancel()
 
 	cfg, err := pgopher.LoadConfig(*cfgFile)
 	if err != nil {
@@ -37,11 +31,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	defer s.CancelContext()
+
 	if *pprofEnabled {
 		go pprofServer(cfg.PprofListenAddress, s.Logger)
 	}
 
-	err = s.Run(ctx)
+	err = s.Run()
 	if err != nil {
 		slog.Error("failed to run pgopher server", slog.String("err", err.Error()))
 		os.Exit(1)
