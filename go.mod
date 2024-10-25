@@ -7,7 +7,7 @@ toolchain go1.23.2
 require (
 	github.com/aws/aws-sdk-go-v2 v1.32.2
 	github.com/aws/aws-sdk-go-v2/config v1.28.0
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.66.0
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.66.1
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/mycreepy/box v0.9.0
 	github.com/robfig/cron/v3 v3.0.1
