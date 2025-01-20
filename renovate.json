@@ -2,16 +2,10 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "github>mycreepy/renovate-config:pkgx"
+    "github>mycreepy/renovate-config:go",
+    "github>mycreepy/renovate-config:pkgx",
+    "github>mycreepy/renovate-config:kubernetes"
   ],
-  "postUpdateOptions": [
-    "gomodTidy"
-  ],
-  "kubernetes": {
-    "fileMatch": [
-      "deploy/.+\\.yml$"
-    ]
-  },
   "packageRules": [
     {
       "matchUpdateTypes": [
@@ -20,18 +14,6 @@
         "digest"
       ],
       "automerge": true
-    },
-    {
-      "groupName": "aws-sdk-go-v2",
-      "matchPackageNames": [
-        "/^github.com/aws/aws-sdk-go-v2.*/"
-      ]
-    },
-    {
-      "groupName": "k8s.io",
-      "matchPackageNames": [
-        "/^k8s.io/.*/"
-      ]
     }
   ]
 }
