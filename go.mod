@@ -2,7 +2,7 @@ module github.com/mycreepy/pgopher
 
 go 1.23.0
 
-toolchain go1.23.5
+toolchain go1.23.6
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.36.0
