@@ -1,4 +1,4 @@
-FROM alpine:3.21
+FROM alpine:3.22
 ARG BINARY_PATH
 WORKDIR /opt/pgopher
 COPY $BINARY_PATH pgopher
