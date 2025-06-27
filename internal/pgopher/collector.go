@@ -50,8 +50,13 @@ func (p profileCollector) Run() {
 
 	_, err = io.Copy(buf, resp.Body)
 	if err != nil {
-		p.logger.Error("failed to read body", slog.String("err", err.Error()))
+		p.logger.Error("failed to read body", slog.Int("statusCode", resp.StatusCode), slog.String("err", err.Error()))
 		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		p.logger.Error("request returned an unexpected status code", slog.Int("statusCode", resp.StatusCode), slog.String("body", buf.String()))
+		return 
 	}
 
 	switch p.sink.Type {
