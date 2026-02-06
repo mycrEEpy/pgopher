@@ -12,7 +12,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
