@@ -12,9 +12,9 @@ require (
 	github.com/mycreepy/box v1.0.0
 	github.com/robfig/cron/v3 v3.0.1
 	go.yaml.in/yaml/v3 v3.0.4
-	k8s.io/api v0.35.0
-	k8s.io/apimachinery v0.35.0
-	k8s.io/client-go v0.35.0
+	k8s.io/api v0.35.1
+	k8s.io/apimachinery v0.35.1
+	k8s.io/client-go v0.35.1
 )
 
 require (
