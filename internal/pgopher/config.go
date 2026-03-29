@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/mycreepy/box"
+	"github.com/mycreepy/box/v2"
 	"go.yaml.in/yaml/v3"
 )
 
