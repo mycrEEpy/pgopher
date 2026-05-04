@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.17
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.100.1
 	github.com/labstack/echo/v5 v5.1.1
-	github.com/mycreepy/box/v2 v2.0.1
+	github.com/mycreepy/box/v2 v2.0.2
 	github.com/robfig/cron/v3 v3.0.1
 	go.yaml.in/yaml/v3 v3.0.4
 	k8s.io/api v0.36.0
