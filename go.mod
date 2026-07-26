@@ -11,7 +11,7 @@ require (
 	github.com/labstack/echo/v5 v5.3.1
 	github.com/mycreepy/box/v2 v2.0.2
 	github.com/robfig/cron/v3 v3.0.1
-	go.yaml.in/yaml/v3 v3.0.4
+	go.yaml.in/yaml/v3 v3.0.5
 	k8s.io/api v0.36.3
 	k8s.io/apimachinery v0.36.3
 	k8s.io/client-go v0.36.3
